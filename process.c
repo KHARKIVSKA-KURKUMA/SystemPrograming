@@ -3,52 +3,50 @@
 #include <string.h>
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        printf("We use: %s <file_name>\n", argv[0]);
+    if (argc != 3) {
+        printf("Usage: %s <input_file> <output_file>\n", argv[0]);
         return 1;
     }
 
-    FILE *file = fopen(argv[1], "r+");
-
-    if (file == NULL) {
-        perror("Error opening file");
+    FILE *inputFile = fopen(argv[1], "r");
+    if (inputFile == NULL) {
+        perror("Error opening input file");
         return 2;
     }
 
+    FILE *outputFile = fopen(argv[2], "w");
+    if (outputFile == NULL) {
+        perror("Error opening output file");
+        fclose(inputFile);
+        return 3;
+    }
 
-    fseek(file, 0, SEEK_END);
-    long fileSize = ftell(file);
+    fseek(inputFile, 0, SEEK_END);
+    long fileSize = ftell(inputFile);
+    fseek(inputFile, 0, SEEK_SET);
+
     char *buffer = (char *)malloc(fileSize + 1);
-    fseek(file, 0, SEEK_SET);
-    fread(buffer, 1, fileSize, file);
+    fread(buffer, 1, fileSize, inputFile);
     buffer[fileSize] = '\0';
 
-    
-  for (int i = 0; i < fileSize; i++) {
-    if (buffer[i] == 'a') {
-      
-        buffer[i] = 'A';
-   
-        memmove(buffer + i + 1, buffer + i, fileSize - i);
-        buffer[i + 1] = 'o';
-        fileSize += 1; // Збільшуємо розмір буфера на 1
-        i++; // Перескакуємо через вставлену "о"
+    for (int i = 0; i < fileSize; i++) {
+        if (buffer[i] == 'a') {
+            buffer[i] = 'A';
+            memmove(buffer + i + 1, buffer + i, fileSize - i);
+            buffer[i + 1] = 'o';
+            fileSize += 1; 
+            i++; 
+        }
     }
-}
 
-    
-    fseek(file, 0, SEEK_SET);
-
-   
-    char *studentInfo = "Student: Vasiuk Kateryna\nGroup: 335а\n";
+    char *studentInfo = "Student: Vasiuk Kateryna\nGroup: 335a\n";
     int studentInfoLength = strlen(studentInfo);
-    fwrite(studentInfo, 1, studentInfoLength, file);
 
-    
-    fwrite(buffer, 1, fileSize, file);
+    fwrite(studentInfo, 1, studentInfoLength, outputFile);
+    fwrite(buffer, 1, fileSize, outputFile);
 
-
-    fclose(file);
+    fclose(inputFile);
+    fclose(outputFile);
     free(buffer);
 
     printf("File processed successfully\n");
