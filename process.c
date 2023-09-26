@@ -21,33 +21,28 @@ int main(int argc, char *argv[]) {
         return 3;
     }
 
-    fseek(inputFile, 0, SEEK_END);
-    long fileSize = ftell(inputFile);
-    fseek(inputFile, 0, SEEK_SET);
+    
+    char buffer[21];  
+    size_t bytesRead = fread(buffer, 1, 20, inputFile);
+    buffer[bytesRead] = '\0';
 
-    char *buffer = (char *)malloc(fileSize + 1);
-    fread(buffer, 1, fileSize, inputFile);
-    buffer[fileSize] = '\0';
+   
+    fwrite(buffer, 1, bytesRead, outputFile);
 
-    for (int i = 0; i < fileSize; i++) {
-        if (buffer[i] == 'a') {
-            buffer[i] = 'A';
-            memmove(buffer + i + 1, buffer + i, fileSize - i);
-            buffer[i + 1] = 'o';
-            fileSize += 1; 
-            i++; 
-        }
-    }
-
-    char *studentInfo = "Student: Vasiuk Kateryna\nGroup: 335a\n";
+    char *studentInfo = "Vasiuk Kateryna 335a";
     int studentInfoLength = strlen(studentInfo);
 
+   
     fwrite(studentInfo, 1, studentInfoLength, outputFile);
-    fwrite(buffer, 1, fileSize, outputFile);
+
+   
+    char fileBuffer[1024];
+    while ((bytesRead = fread(fileBuffer, 1, sizeof(fileBuffer), inputFile)) > 0) {
+        fwrite(fileBuffer, 1, bytesRead, outputFile);
+    }
 
     fclose(inputFile);
     fclose(outputFile);
-    free(buffer);
 
     printf("File processed successfully\n");
 
