@@ -1,17 +1,17 @@
 TARGET = process
 SRC = process.c
-INPUT_FILE = inp.txt
-OUTPUT_FILE = out.txt  
+CC = gcc 
 
 .PHONY: all clean
 
 all: $(TARGET)
 
 $(TARGET): $(SRC)
-	cc -o $(TARGET) $(SRC)
+	$(CC) -o $(TARGET) $(SRC)
 
 run: $(TARGET)
-	./$(TARGET) $(INPUT_FILE) $(OUTPUT_FILE)  
+	./$(TARGET)
 
 clean:
-	rm -f $(TARGET) $(OUTPUT_FILE)
+	rm -f $(TARGET)
+
