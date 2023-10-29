@@ -1,0 +1,1 @@
+Copy the current file to a new file with the given name (similar to the cp command).
