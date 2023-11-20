@@ -6,16 +6,21 @@
 
 #define MAX_DATA_SIZE 1000
 
-typedef struct {
+typedef struct
+{
     char data[MAX_DATA_SIZE];
-    void (*sort_func)(char *data, int size); 
+    void (*sort_func)(char *data, int size);
 } ThreadData;
 
 // Функція сортування бульбашкою
-void bubbleSort(char *data, int size) {
-    for (int i = 0; i < size - 1; i++) {
-        for (int j = 0; j < size - i - 1; j++) {
-            if (data[j] > data[j + 1]) {
+void bubbleSort(char *data, int size)
+{
+    for (int i = 0; i < size - 1; i++)
+    {
+        for (int j = 0; j < size - i - 1; j++)
+        {
+            if (data[j] > data[j + 1])
+            {
                 char temp = data[j];
                 data[j] = data[j + 1];
                 data[j + 1] = temp;
@@ -25,7 +30,8 @@ void bubbleSort(char *data, int size) {
 }
 
 // Функція сортування злиттям
-void merge(char *data, int left, int middle, int right) {
+void merge(char *data, int left, int middle, int right)
+{
     int i, j, k;
     int n1 = middle - left + 1;
     int n2 = right - middle;
@@ -39,24 +45,30 @@ void merge(char *data, int left, int middle, int right) {
     i = 0;
     j = 0;
     k = left;
-    while (i < n1 && j < n2) {
-        if (L[i] <= R[j]) {
+    while (i < n1 && j < n2)
+    {
+        if (L[i] <= R[j])
+        {
             data[k] = L[i];
             i++;
-        } else {
+        }
+        else
+        {
             data[k] = R[j];
             j++;
         }
         k++;
     }
 
-    while (i < n1) {
+    while (i < n1)
+    {
         data[k] = L[i];
         i++;
         k++;
     }
 
-    while (j < n2) {
+    while (j < n2)
+    {
         data[k] = R[j];
         j++;
         k++;
@@ -64,8 +76,10 @@ void merge(char *data, int left, int middle, int right) {
 }
 
 // Функція сортування злиттям (рекурсивний виклик)
-void mergeSortRecursive(char *data, int left, int right) {
-    if (left < right) {
+void mergeSortRecursive(char *data, int left, int right)
+{
+    if (left < right)
+    {
         int middle = left + (right - left) / 2;
         mergeSortRecursive(data, left, middle);
         mergeSortRecursive(data, middle + 1, right);
@@ -74,18 +88,27 @@ void mergeSortRecursive(char *data, int left, int right) {
 }
 
 // Функція сортування злиттям (обгортка для використання в потоці)
-void mergeSort(char *data, int size) {
+void mergeSort(char *data, int size)
+{
     mergeSortRecursive(data, 0, size - 1);
 }
 
 // Функція, яка виконує сортування в потоці
-void *sortInThread(void *arg) {
+void *sortInThread(void *arg)
+{
     ThreadData *threadData = (ThreadData *)arg;
+
+    printf("Original Data: %s\n", threadData->data);
+
     threadData->sort_func(threadData->data, strlen(threadData->data));
+
+    printf("Sorted Data: %s\n", threadData->data);
+
     pthread_exit(NULL);
 }
 
-int main() {
+int main()
+{
     char data[MAX_DATA_SIZE] = "Vasiuk Kateryna, 335а, 11.01.2003";
 
     ThreadData threadData;
