@@ -6,16 +6,20 @@
 #define MAX_PATH_LENGTH 512
 #define MAX_SIGNATURE_LENGTH 512
 
-int containsSignature(const char *source, const char *signature, size_t sourceLength, size_t signatureLength) {
-    char *result = strstr(source, signature);
+int containsSignature(const char *source, const char *signature, size_t sourceLength, size_t signatureLength)
+{
+    char *result = memmem(source, signature);
     return result != NULL;
 }
 
-int readSignatureFromFile(const char *filename, char *signature, size_t max_length) {
+int readSignatureFromFile(const char *filename, char *signature, size_t max_length)
+{
     FILE *file = fopen(filename, "r");
-    if (file) {
+    if (file)
+    {
         size_t bytesRead = fread(signature, 1, max_length - 1, file);
-        if (bytesRead > 0) {
+        if (bytesRead > 0)
+        {
             signature[bytesRead] = '\0'; // Null-terminate the string
             fclose(file);
             return 1;
@@ -25,32 +29,42 @@ int readSignatureFromFile(const char *filename, char *signature, size_t max_leng
     return 0;
 }
 
-void scanDirectory(const char *path, const char *signature) {
+void scanDirectory(const char *path, const char *signature)
+{
     DIR *dir;
     struct dirent *entry;
 
-    if ((dir = opendir(path)) != NULL) {
-        while ((entry = readdir(dir)) != NULL) {
-            if (entry->d_type == DT_DIR) {
-                if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
+    if ((dir = opendir(path)) != NULL)
+    {
+        while ((entry = readdir(dir)) != NULL)
+        {
+            if (entry->d_type == DT_DIR)
+            {
+                if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
+                {
                     char subpath[MAX_PATH_LENGTH];
                     snprintf(subpath, sizeof(subpath), "%s/%s", path, entry->d_name);
                     scanDirectory(subpath, signature);
                 }
-            } else {
+            }
+            else
+            {
                 char filepath[MAX_PATH_LENGTH];
                 snprintf(filepath, sizeof(filepath), "%s/%s", path, entry->d_name);
                 FILE *file = fopen(filepath, "r");
-                if (file) {
+                if (file)
+                {
                     fseek(file, 0, SEEK_END);
                     size_t fileLength = ftell(file);
                     fseek(file, 0, SEEK_SET);
 
                     char *fileContents = (char *)malloc(fileLength);
-                    if (fileContents) {
+                    if (fileContents)
+                    {
                         fread(fileContents, 1, fileLength, file);
 
-                        if (containsSignature(fileContents, signature, fileLength, strlen(signature))) {
+                        if (containsSignature(fileContents, signature, fileLength, strlen(signature)))
+                        {
                             printf("Знайдено файл з сигнатурою в %s\n", filepath);
                         }
 
@@ -65,14 +79,18 @@ void scanDirectory(const char *path, const char *signature) {
     }
 }
 
-int main() {
+int main()
+{
     const char *path = "/home/vasiuk";
     const char *signatureFilename = "signature.txt";
 
     char signature[MAX_SIGNATURE_LENGTH];
-    if (readSignatureFromFile(signatureFilename, signature, sizeof(signature))) {
+    if (readSignatureFromFile(signatureFilename, signature, sizeof(signature)))
+    {
         scanDirectory(path, signature);
-    } else {
+    }
+    else
+    {
         printf("Помилка: не вдалося прочитати сигнатуру з файлу %s\n", signatureFilename);
     }
 
