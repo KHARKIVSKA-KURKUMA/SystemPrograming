@@ -20,7 +20,7 @@ int readSignatureFromFile(const char *filename, char *signature, size_t max_leng
         size_t bytesRead = fread(signature, 1, max_length - 1, file);
         if (bytesRead > 0)
         {
-            signature[bytesRead] = '\0'; // Null-terminate the string
+            signature[bytesRead] = '\0';
             fclose(file);
             return 1;
         }
